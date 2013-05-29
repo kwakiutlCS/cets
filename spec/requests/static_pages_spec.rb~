@@ -1,0 +1,12 @@
+require 'spec_helper'
+
+describe "StaticPages" do
+
+  describe "home page" do
+    it "should have content" do
+      visit "/static_pages/home"
+      page.should have_content("Chess Endgame Practise")
+    end
+  end
+
+end
