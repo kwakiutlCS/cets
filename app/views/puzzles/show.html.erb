@@ -1,0 +1,19 @@
+<h2><%= @puzzle.title %></h2>
+
+
+<script>
+    $(document).ready(function() {
+    
+    chessBoard.startChessBoard({player:"white", size: 400,  fen:"<%= @instance.fen %>", type:"<%= @puzzle.puzzle_type %>", lines:<%= raw @instance.lines %> });
+    
+
+    });
+
+    var updatePageAfterChessBoardMove = function() {
+    
+    
+    }
+
+</script>
+
+<div id="chessBoardHolder"></div>

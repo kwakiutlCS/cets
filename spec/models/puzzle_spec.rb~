@@ -1,0 +1,11 @@
+require 'spec_helper'
+
+describe Puzzle do
+  before { @puzzle = Puzzle.new(title: "Example User", puzzle_type: "puzzle") }
+
+  subject { @puzzle }
+
+  it { should respond_to(:title) }
+  it { should respond_to(:puzzle_type)}
+  it { should respond_to(:subtitle) }
+end

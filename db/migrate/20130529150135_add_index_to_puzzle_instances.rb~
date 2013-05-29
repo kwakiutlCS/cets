@@ -1,0 +1,5 @@
+class AddIndexToPuzzleInstances < ActiveRecord::Migration
+  def change
+    add_index :puzzle_instance, [:puzzle_id]
+  end
+end
