@@ -4,7 +4,7 @@
 <script>
     $(document).ready(function() {
     
-    chessBoard.startChessBoard({player:"white", size: 400,  fen:"<%= @instance.fen %>", type:"<%= @puzzle.puzzle_type %>", lines:<%= raw @instance.lines %> });
+    chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"<%= @puzzle.puzzle_type %>", lines:<%= raw @instance.lines %> });
     
 
     });
