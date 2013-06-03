@@ -1,13 +1,21 @@
 class PuzzlesController < ApplicationController
   def index
-    @puzzles = Puzzle.all
+    @puzzles = Puzzle.find(:all, group:"title")
   end
 
   def show
     @puzzle = Puzzle.find(params[:id])
-    offset = rand(@puzzle.puzzle_instances.count)
+    puzzles = Puzzle.find(:all, conditions: ["title = ?", @puzzle.title])
+    
+    instances = []
+    puzzles.each do |p|
+      p.puzzle_instances.each { |i| instances << i }
+    end
+    
+    offset = rand(instances.count)
 
-    @instance = @puzzle.puzzle_instances.first(offset: offset)
+    @instance = instances[offset]
+    
     @side = "black"
     @side = "white" if @instance.fen.split()[1] == "w"
 

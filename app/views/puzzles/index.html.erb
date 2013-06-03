@@ -1,5 +1,9 @@
 <h2>Puzzle list</h2>
 
+<ul>
 <% @puzzles.each do |p| %>
+<li>
 <%= link_to p.title, p %>
+</li>
 <% end %>
+</ul>
