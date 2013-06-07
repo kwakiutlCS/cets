@@ -1,0 +1,16 @@
+class Stat < ActiveRecord::Base
+  before_save :set_defaults
+
+  attr_accessible :life_attempts, :life_solved, :recent_attempts, :recent_solved
+  
+  belongs_to :user
+  belongs_to :puzzle
+
+  def set_defaults
+    life_attempts ||= 0
+    life_solved ||= 0
+    recent_attempts ||= 0
+    recent_solved ||= 0
+  end
+
+end

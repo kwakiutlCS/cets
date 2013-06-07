@@ -1,0 +1,8 @@
+class RenameStatsModel < ActiveRecord::Migration
+  def up
+    rename_table :stats, :stat
+  end
+
+  def down
+  end
+end
