@@ -14,7 +14,7 @@ class PuzzleInstance < ActiveRecord::Base
 
   private
   def set_defaults
-    self.rating || = 1200
+    self.rating ||= 1200
   end
 
 end
