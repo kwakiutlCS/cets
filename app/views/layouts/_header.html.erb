@@ -1,4 +1,18 @@
-<% if user_signed_in? %>
-   <%= current_user.email %>
-   <%= link_to "Sign_out", destroy_user_session_path, method: :delete %>
-<% end %>
+<header class="navbar navbar-fixed-top navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container">
+      
+      <nav>
+        <ul class="nav pull-right">
+          <% if signed_in? %>
+            <%= current_user.email %>
+	     <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
+          <% else %>
+            <li><%= link_to "Sign in", new_user_session_path %></li>
+          <% end %>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+

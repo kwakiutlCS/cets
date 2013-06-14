@@ -10,10 +10,17 @@
     });
 
     var updatePageAfterChessBoardMove = function() {
-    
+        if (chessBoard.lines === "solved") {
+            $("#moveResult").text("Puzzle solved");
+
+        }
+        if (chessBoard.lines === "failed") {
+            $("#moveResult").text("Puzzle failed");
+        }
     
     }
 
 </script>
 
 <div id="chessBoardHolder"></div>
+<div id="moveResult"></div>
