@@ -22,4 +22,22 @@ class PuzzlesController < ApplicationController
 
   end
 
+
+  def markSolved
+    p "\n\n\n\nQE*BGKQHA*HK*HQRKHHREK\n\n\naairophgnaAPGHIGHAGHGAAOPHAIGHG\n\n\n\n"
+    stat = current_user.stats.find(:all, conditions: ["puzzle_id = ?", params[:puzzle_id]])[0]
+    stat.life_attempts += 1
+
+    if params[:result] == "1"
+      stat.streak += 1
+      stat.life_solved += 1
+    else
+      stat.streak = 0
+    end
+
+    stat.save
+
+    render json: nil
+  end
+
 end

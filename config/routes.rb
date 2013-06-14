@@ -2,7 +2,9 @@ Cets::Application.routes.draw do
   devise_for :users, controllers: {registrations: "registrations"}
 
   root to: 'static_pages#home'
+  match "puzzles/solved" => 'puzzles#markSolved'
   resources :puzzles
+  
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

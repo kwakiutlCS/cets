@@ -12,10 +12,19 @@
     var updatePageAfterChessBoardMove = function() {
         if (chessBoard.lines === "solved") {
             $("#moveResult").text("Puzzle solved");
+            $.ajax('/puzzles/solved',{
+                type: "POST",
+                data: {"puzzle_id":<%= @puzzle.id %>, "result": 1}
+            });
+    
 
         }
         if (chessBoard.lines === "failed") {
             $("#moveResult").text("Puzzle failed");
+            $.ajax('/puzzles/solved',{
+                type: "POST",
+                data: {"puzzle_id":<%= @puzzle.id %>, "result": 0}
+            });
         }
     
     }
