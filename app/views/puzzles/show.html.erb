@@ -1,30 +1,42 @@
-<h2><%= @puzzle.title %></h2>
-
+<div id="puzzle_title"><h2><%= @puzzle.title %></h2></div>
+<div><div id="moveResult"></div><div id="puzzle_navigation" style="display:none"><%= link_to "Back", puzzles_path %><%= link_to "Next Puzzle", @puzzle %></div></div>
+<div id="puzzle_explanation"></div>
 
 <script>
     $(document).ready(function() {
     
     chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"<%= @puzzle.puzzle_type %>", lines:<%= raw(@instance.lines) %> });
-    
+        
 
+    
     });
 
     var updatePageAfterChessBoardMove = function() {
-        if (chessBoard.lines === "solved") {
+        if (chessBoard.getPuzzleResult() === "solved") {
             $("#moveResult").text("Puzzle solved");
+            $("#puzzle_navigation").show();
             $.ajax('/puzzles/solved',{
                 type: "POST",
                 data: {"puzzle_id":<%= @puzzle.id %>, "result": 1}
             });
-    
+            
 
         }
-        if (chessBoard.lines === "failed") {
+        if (chessBoard.getPuzzleResult() === "failed") {
             $("#moveResult").text("Puzzle failed");
+            $("#puzzle_navigation").show();
             $.ajax('/puzzles/solved',{
                 type: "POST",
                 data: {"puzzle_id":<%= @puzzle.id %>, "result": 0}
             });
+            var holder = $("#chessBoardHolder"); 
+            holder.children().remove();
+            chessBoard.position = {};
+            
+            chessBoard.startChessBoard({player:"locked", size: 400,  fen:"<%= @instance.fen %>", type:"history", lines:<%= raw(@instance.solution) %>});
+            $(".chessBoardPreviousEnd").removeClass("chessBoardPreviousEnd");
+            $(".chessBoardPreviousStart").removeClass("chessBoardPreviousStart");
+            $("#gameHistoryDiv").show();
         }
     
     }
@@ -32,4 +44,5 @@
 </script>
 
 <div id="chessBoardHolder"></div>
-<div id="moveResult"></div>
+
+<div id="gameHistoryDiv" style="display:none"><button class="btn btn-small previousMove"><i class="icon-chevron-left"></i></button><button class="btn btn-small nextMove"><i class="icon-chevron-right"></i></button></div>

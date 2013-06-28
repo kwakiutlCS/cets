@@ -28,9 +28,13 @@ var chessBoard = {
 
     container: "chessBoardHolder",
 
+    gameHistoryContainer: "gameHistoryDiv",
+
     type: "game",
     
     lines: [],
+
+    cursor: 0,
 
 
     ///////////////////////////////////////////////////////////////////////////////
@@ -374,7 +378,15 @@ var chessBoard = {
 	 // allow square selection and piece movement
 	 $("#chessBoardGameBoard").on("click", ".chessBoardSquare", this.addBoardEvents);
 	 	 
-	 
+	 if (this.type === "history") {
+	     var chessBoard = this;
+	     $("#"+this.gameHistoryContainer).on("click",".nextMove", function(){
+		  chessBoard.moveHistory(1);
+	     });
+	     $("#"+this.gameHistoryContainer).on("click",".previousMove", function(){
+		  chessBoard.moveHistory(-1);
+	     });
+	 }
     },
 
     preparePromotion: function() {
@@ -392,7 +404,7 @@ var chessBoard = {
 	 $("#blackPromotionTable").append("<div class='chessBoardPromotionSquare' id='blackPromotionBishop' data-piece='b'></div>");
 	 $("#blackPromotionTable").append("<div class='chessBoardPromotionSquare' id='blackPromotionKnight' data-piece='n'></div>");
 
-	 $("#chessBoardPromotionTable, .chessBoardColorPromotionTable").hide();
+ $("#chessBoardPromotionTable, .chessBoardColorPromotionTable").hide();
 
 	 
 	 $("#chessBoardPromotionTable").on('click', '.chessBoardPromotionSquare', function() {
@@ -503,6 +515,9 @@ var chessBoard = {
 
 	 // remove selections
 	 selectedSquare.removeClass("chessBoardSelectedSquare");
+
+
+	 
 	     
     },
 
@@ -632,9 +647,9 @@ var chessBoard = {
 	     }
 	 });
 
-	 if ( this.turn === "white" || this.player === "white" ) 
+	 if ( this.turn === "white" || this.player === "white" || this.player == "locked") 
 	     $(".chessBoardPiece.black").draggable("disable");
-	 if ( this.turn === "black" || this.player === "black" ) 
+	 if ( this.turn === "black" || this.player === "black" || this.player == "locked") 
 	     $(".chessBoardPiece.white").draggable("disable");
     },
 
@@ -658,7 +673,100 @@ var chessBoard = {
 	 
     },
     
-    
+    // updates board with recorded moves
+    moveHistory: function(direction) {
+	 if (this.type === "history") {
+	     this.cursor += direction;
+	     if (this.cursor < 0 || this.cursor > this.lines.length)
+		  this.cursor -= direction;
+
+	     var localCursor = 0;
+	     var passant = "";
+	     var localPosition = this.copyPosition(this.position);
+	     
+	     while (localCursor < this.cursor) {
+		  var start = this.lines[localCursor][0];
+		  var end = this.lines[localCursor][1];
+
+		  localPosition[end] = localPosition[start];
+		  delete localPosition[start];
+
+		  // deals with promotion
+		  if (this.lines[localCursor].length === 3)
+		      localPosition[end] = this.lines[localCursor][2]
+		  
+		  localCursor += 1;
+		  
+		  // removes passsant pawn
+		  if (end === passant) {
+		      if (passant[1] === "3") {
+			   delete localPosition[passant[0]+"4"];
+		      }
+		      else {
+			   delete localPosition[passant[0]+"5"];
+		      }
+		  }
+		  
+		  // marks passant square
+		  if (localPosition[end] === "P" && start[1] === "2" && end[1] === "4")
+		      passant = start[0]+"3";
+		  else if (localPosition[start] === "p" && start[1] === "7" && end[1] === "5")
+		      passant = start[0]+"6";
+		  else
+		      passant = "";
+
+		  // solves castling
+		  if (localPosition[end] === "K" && start == "e1") {
+		      if (end == "g1") {
+			   delete localPosition["h1"];
+			   localPosition["f1"] = "R";
+		      }
+		      else {
+			   delete localPosition["a1"];
+			   localPosition["d1"] = "R";
+		      }
+		  }
+		  if (localPosition[end] === "k" && start == "e8") {
+		      if (end == "g8") {
+			   delete localPosition["h8"];
+			   localPosition["f8"] = "r";
+		      }
+		      else {
+			   delete localPosition["a8"];
+			   localPosition["d8"] = "r";
+		      }
+		  }
+	     }
+
+	     var startSquare = $("#"+start);
+	     var endSquare = $("#"+end);
+	     
+	     // register the move on the board
+	     $(".chessBoardPreviousEnd").removeClass("chessBoardPreviousEnd");
+	     $(".chessBoardPreviousStart").removeClass("chessBoardPreviousStart");
+	     
+	     endSquare.addClass("chessBoardPreviousEnd");
+	     startSquare.addClass("chessBoardPreviousStart");
+	     $(".chessBoardPiece").remove();
+	     
+	     
+	     for ( var k in localPosition ) {
+
+		  // if piece is white
+		  if ( localPosition[k].toUpperCase() === localPosition[k] )
+		      $("#"+k).append("<div class='chessBoardPiece white chessBoard"+localPosition[k]+"' data-color='white' data-piece='"+localPosition[k]+"'></div>");
+
+		  // if piece is black
+		  else 
+		      $("#"+k).append("<div class='chessBoardPiece black chessBoard"+localPosition[k]+"' data-color='black' data-piece='"+localPosition[k]+"'></div>");
+	     
+	     }
+	     
+	     
+	 }
+
+    },
+
     movePiece: function(start, end) {
 	 var dt = 0;
 	 if ( this.type === "puzzle" && this.turn !== this.player )

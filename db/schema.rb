@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130614093310) do
+ActiveRecord::Schema.define(:version => 20130628113804) do
 
   create_table "puzzle_instances", :force => true do |t|
     t.string   "fen"
@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(:version => 20130614093310) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.integer  "puzzle_id"
+    t.string   "solution"
   end
 
   add_index "puzzle_instances", ["puzzle_id"], :name => "index_puzzle_instances_on_puzzle_id"
