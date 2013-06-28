@@ -1,6 +1,6 @@
 class PuzzlesController < ApplicationController
   def index
-    @puzzles = Puzzle.find(:all, group:"title")
+    @puzzles = Puzzle.order("difficulty").group("title")
   end
 
   def show

@@ -1,19 +1,22 @@
 <div id="puzzle_title"><h2><%= @puzzle.title %></h2></div>
+<div id="puzzle_explanation"><% if @puzzle.description %><%= @puzzle.description %><% else %>Find the best move(s)<% end %></div>
 <div><div id="moveResult"></div><div id="puzzle_navigation" style="display:none"><%= link_to "Back", puzzles_path %><%= link_to "Next Puzzle", @puzzle %></div></div>
-<div id="puzzle_explanation"></div>
 
 <script>
-    $(document).ready(function() {
+     $(document).ready(function() {
     
     chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"<%= @puzzle.puzzle_type %>", lines:<%= raw(@instance.lines) %> });
         
-
+     if (chessBoard.player === "white")
+         $("#colorIndicator").addClass("colorWhite");
+     else
+         $("#colorIndicator").addClass("colorBlack");
     
     });
 
     var updatePageAfterChessBoardMove = function() {
         if (chessBoard.getPuzzleResult() === "solved") {
-            $("#moveResult").text("Puzzle solved");
+            $("#moveResult").text("Puzzle solved").addClass("puzzle_correct");
             $("#puzzle_navigation").show();
             $.ajax('/puzzles/solved',{
                 type: "POST",
@@ -23,7 +26,7 @@
 
         }
         if (chessBoard.getPuzzleResult() === "failed") {
-            $("#moveResult").text("Puzzle failed");
+            $("#moveResult").text("Puzzle failed").addClass("puzzle_wrong");
             $("#puzzle_navigation").show();
             $.ajax('/puzzles/solved',{
                 type: "POST",
@@ -44,5 +47,5 @@
 </script>
 
 <div id="chessBoardHolder"></div>
-
+<div id="colorIndicator"></div>
 <div id="gameHistoryDiv" style="display:none"><button class="btn btn-small previousMove"><i class="icon-chevron-left"></i></button><button class="btn btn-small nextMove"><i class="icon-chevron-right"></i></button></div>

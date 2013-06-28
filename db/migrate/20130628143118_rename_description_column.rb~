@@ -1,0 +1,8 @@
+class RenameDescriptionColumn < ActiveRecord::Migration
+  def up
+    rename_column :puzzle, :descrition, :description
+  end
+
+  def down
+  end
+end

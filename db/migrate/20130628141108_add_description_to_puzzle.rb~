@@ -1,0 +1,5 @@
+class AddDescriptionToPuzzle < ActiveRecord::Migration
+  def change
+    add_column :puzzles, :string, :descrition
+  end
+end
