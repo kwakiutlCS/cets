@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130628162235) do
+ActiveRecord::Schema.define(:version => 20130629114135) do
 
   create_table "puzzle_instances", :force => true do |t|
     t.string   "fen"
@@ -39,10 +39,11 @@ ActiveRecord::Schema.define(:version => 20130628162235) do
     t.integer  "streak"
     t.integer  "life_attempts"
     t.integer  "life_solved"
-    t.datetime "created_at",    :null => false
-    t.datetime "updated_at",    :null => false
+    t.datetime "created_at",                       :null => false
+    t.datetime "updated_at",                       :null => false
     t.integer  "user_id"
     t.integer  "puzzle_id"
+    t.boolean  "solved",        :default => false
   end
 
   create_table "users", :force => true do |t|

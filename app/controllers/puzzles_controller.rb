@@ -31,8 +31,14 @@ class PuzzlesController < ApplicationController
       if params[:result] == "1"
         stat.streak += 1
         stat.life_solved += 1
+        if stat.streak == 7 || stat.life_solved/stat.life_attempts > 0.85
+          stat.solved = true
+        end
       else
         stat.streak = 0
+        if stat.solved && stat.life_solved/stat.life_attempts < 0.7
+          stat.solved = false
+        end
       end
 
       stat.save
