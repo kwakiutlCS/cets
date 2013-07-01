@@ -1,6 +1,21 @@
 class PuzzlesController < ApplicationController
   def index
+    @user = current_user
     @puzzles = Puzzle.order("difficulty").group("title")
+    
+    @solved = {}
+    @puzzles.each do |p|
+      if @user
+        @solved[p.title] = true
+        i_array = Puzzle.where(title: p.title)
+        i_array.each do |i| 
+          stat = @user.stats.where(puzzle_id: i.id)
+          @solved[p.title] = false unless stat[0].solved
+        end
+      else
+        @solved[p.title] = false
+      end  
+    end
   end
 
   def show
@@ -31,12 +46,21 @@ class PuzzlesController < ApplicationController
       if params[:result] == "1"
         stat.streak += 1
         stat.life_solved += 1
-        if stat.streak == 7 || stat.life_solved/stat.life_attempts > 0.85
+        
+        ratio = stat.life_solved/Float(stat.life_attempts)
+
+        if stat.streak == 8
           stat.solved = true
+          if ratio < 0.85
+            stat.life_solved = stat.streak
+            stat.life_attempts = stat.streak/0.85
+          end
+        elsif ratio > 0.85
+               stat.solved = true
         end
       else
         stat.streak = 0
-        if stat.solved && stat.life_solved/stat.life_attempts < 0.7
+        if stat.solved && stat.life_solved/Float(stat.life_attempts) < 0.75
           stat.solved = false
         end
       end

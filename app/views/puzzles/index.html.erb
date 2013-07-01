@@ -1,9 +1,33 @@
+<script>
+  $(document).ready(function(){
+      $("ul").on("mouseover",".info_image", function(evt) {
+          $("#"+$(this).data("title").split(" ").join("_")).show();
+          
+      });
+      $("ul").on("mouseout",".info_image", function() {
+        $("#"+$(this).data("title").split(" ").join("_")).hide();
+          
+      });
+  });
+</script>
+
+
+
 <h2>Puzzle list</h2>
 
+
+
 <ul>
-<% @puzzles.each do |p| %>
-<li>
-<%= link_to p.title, p %>
-</li>
-<% end %>
+  <% @puzzles.each do |p| %>
+
+  <li>
+    <%= link_to p.title, p %><% if @solved[p.title] %> <div class="correct_image index_image"></div><% end %> <div class="info_image index_image" data-title="<%= p.title %>"></div>
+  </li>
+
+  <% end %>
 </ul>
+
+
+
+<div class="puzzle_description" id="Mating_pattern">mate pattern description</div>
+<div class="puzzle_description" id="Mating_pattern_2">mate pattern 2 description</div>

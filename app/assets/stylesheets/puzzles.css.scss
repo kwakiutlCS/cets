@@ -24,3 +24,38 @@
 .colorBlack {
 	     background-color: #000000;
 }
+
+
+.index_image {
+	      background-size: 100%;
+		 width: 20px;	  
+		 height: 15px;  
+		 display: inline-block;
+		 margin: 0 0 0 8px;	     
+}
+
+.correct_image {
+		 background-image: url("correct.png");
+}
+
+.info_image {
+		 background-image: url("info.png");
+		 width: 15px;
+}
+
+li {
+   line-heigth: 25px;
+}
+
+.puzzle_description {
+		      position: absolute;
+    width: 800px;
+    border: 8px solid black;
+    padding: 30px;
+    background-color: #aa8855;
+    -moz-border-radius: 30px;
+    border-radius: 30px;   
+    text-align: center;
+    line-height: 30px;  
+    display: none;
+}
