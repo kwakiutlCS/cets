@@ -1,7 +1,12 @@
 <script>
   $(document).ready(function(){
-      $("ul").on("mouseover",".info_image", function(evt) {
-          $("#"+$(this).data("title").split(" ").join("_")).show();
+      $("ul").on("mouseover",".info_image", function(e) {
+          var o = { 
+             left: e.pageX,
+             top: e.pageY
+          }
+          $("#"+$(this).data("title").split(" ").join("_")).show().offset(o);
+          
           
       });
       $("ul").on("mouseout",".info_image", function() {
