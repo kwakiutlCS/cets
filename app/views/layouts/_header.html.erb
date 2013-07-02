@@ -5,8 +5,9 @@
       <nav>
         <ul class="nav pull-right">
           <% if signed_in? %>
-            <%= current_user.email %>
+	     <%= current_user.username %>
 	     <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
+	     
           <% else %>
             <li><%= link_to "Sign in", new_user_session_path %></li>
           <% end %>

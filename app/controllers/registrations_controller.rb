@@ -13,8 +13,7 @@ class RegistrationsController < Devise::RegistrationsController
       stat.puzzle_id = p.id
       stat.life_attempts = 0
       stat.life_solved = 0
-      stat.recent_attempts = 0
-      stat.recent_solved = 0
+      stat.streak = 0
       stat.save
     end
   end
