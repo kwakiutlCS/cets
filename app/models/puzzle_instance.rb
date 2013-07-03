@@ -6,7 +6,7 @@ class PuzzleInstance < ActiveRecord::Base
 
   belongs_to :puzzle
 
-  
+  has_many :comments, dependent: :destroy
 
   validates :fen, presence: true
   

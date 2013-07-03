@@ -4,6 +4,7 @@ Cets::Application.routes.draw do
   root to: 'static_pages#home'
   match "puzzles/solved" => 'puzzles#markSolved'
   resources :puzzles
+  resources :comments
   
 
   # The priority is based upon order of creation:

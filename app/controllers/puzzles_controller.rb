@@ -35,6 +35,11 @@ class PuzzlesController < ApplicationController
     @side = "black"
     @side = "white" if @instance.fen.split()[1] == "w"
 
+    @comments = Comment.where(instance_id: @instance.id)
+    if user_signed_in?
+      @comment = current_user.comments.build(instance_id:@instance.id)
+    end
+
   end
 
 

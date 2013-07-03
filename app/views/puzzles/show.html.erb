@@ -5,14 +5,16 @@
 <script>
      $(document).ready(function() {
     
-    chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"<%= @puzzle.puzzle_type %>", lines:<%= raw(@instance.lines) %> });
+     chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"<%= @puzzle.puzzle_type %>", lines:<%= raw(@instance.lines) %> });
         
      if (chessBoard.player === "white")
          $("#colorIndicator").addClass("colorWhite");
      else
          $("#colorIndicator").addClass("colorBlack");
     
-    });
+     });
+
+     
 
     var updatePageAfterChessBoardMove = function() {
         if (chessBoard.getPuzzleResult() === "solved") {
@@ -23,7 +25,25 @@
                 data: {"puzzle_id":<%= @puzzle.id %>, "result": 1}
             });
             
-
+            $("#comments_list").show();
+            $("#create_comment").show();
+            $('form').submit(function(evt) {  
+                evt.preventDefault();
+                var that = $(this);
+                var data = that.serialize();
+                var dest = that.attr("action");
+                $.ajax(dest, {
+                    type: "POST",
+                    data: data,
+                    dataType: "JSON",
+                    success: function(json) {
+                        $("textarea").val("");
+                        if (json.text) 
+                            $("#comments_list").append('<div class="comment_row"><div class="comment_text">'+json.text+'</div><div class="comment_author">'+json.name+'</div></div>');
+                        
+                    } 
+                }); 
+            });
         }
         if (chessBoard.getPuzzleResult() === "failed") {
             $("#moveResult").text("Puzzle failed").addClass("puzzle_wrong");
@@ -40,7 +60,27 @@
             $(".chessBoardPreviousEnd").removeClass("chessBoardPreviousEnd");
             $(".chessBoardPreviousStart").removeClass("chessBoardPreviousStart");
             $("#gameHistoryDiv").show();
+            $("#comments_list").show();
+            $("#create_comment").show(); 
+            $('form').submit(function(evt) {  
+                evt.preventDefault();
+                var that = $(this);
+                var data = that.serialize();
+                var dest = that.attr("action");
+                $.ajax(dest, {
+                    type: "POST",
+                    data: data,
+                    dataType: "JSON",
+                    success: function(json) {
+                        $("form input").val("");
+                        if (json.text)
+                            $("#comments_list").append('<div class="comment_row"><div class="comment_text">'+json.text+'</div><div class="comment_author">'+json.name+'</div></div>');
+                    } 
+                }); 
+            });
         }
+
+        
     
     }
 
@@ -49,3 +89,17 @@
 <div id="chessBoardHolder"></div>
 <div id="colorIndicator"></div>
 <div id="gameHistoryDiv" style="display:none"><button class="btn btn-small previousMove"><i class="icon-chevron-left"></i></button><button class="btn btn-small nextMove"><i class="icon-chevron-right"></i></button></div>
+
+<div id="comments_box">
+
+<div id="comments_list" style="display:none">
+  <% @comments.each do |c| %>
+  <div class="comment_row"><div class="comment_text"><%= c.text %></div><div class="comment_author"><%= c.user.username %></div></div>
+  <% end %>
+</div>
+<% if user_signed_in? %>
+<div id="create_comment" style="display:none">
+  <%= render "comments/form" %>
+</div>
+<% end %>
+</div>

@@ -1,0 +1,16 @@
+
+<%= form_for(@comment) do |f| %>
+
+   <p>
+    <%= f.text_area :text %>
+   </p>
+
+   <p>
+    <%= f.hidden_field :user_id %>
+   </p>
+
+<p>
+    <%= f.hidden_field :instance_id %>
+   </p>
+   <%= f.submit %>
+<% end %>
