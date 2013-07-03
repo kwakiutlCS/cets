@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130703133630) do
+ActiveRecord::Schema.define(:version => 20130703182443) do
 
   create_table "comments", :force => true do |t|
     t.integer  "user_id"
@@ -20,6 +20,8 @@ ActiveRecord::Schema.define(:version => 20130703133630) do
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
   end
+
+  add_index "comments", ["instance_id"], :name => "index_comments_on_instance_id"
 
   create_table "puzzle_instances", :force => true do |t|
     t.string   "fen"
@@ -53,6 +55,9 @@ ActiveRecord::Schema.define(:version => 20130703133630) do
     t.integer  "puzzle_id"
     t.boolean  "solved",        :default => false
   end
+
+  add_index "stats", ["puzzle_id"], :name => "index_stats_on_puzzle_id"
+  add_index "stats", ["user_id"], :name => "index_stats_on_user_id"
 
   create_table "users", :force => true do |t|
     t.string   "email",                                 :default => "", :null => false
