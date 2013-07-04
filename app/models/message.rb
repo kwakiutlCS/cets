@@ -1,0 +1,15 @@
+class Message < ActiveRecord::Base
+  attr_accessible :sender_id, :text, :user_id
+
+  belongs_to :user
+  validates :sender_id, presence: true
+  validates :user_id, presence: true
+  validates :text, presence: true
+  validates :sender_name, presence: true
+
+
+  def self.unopened_messages(user)
+    find(:all, conditions: {user_id: user.id, read:false})
+  end
+
+end

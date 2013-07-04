@@ -5,6 +5,10 @@
       <nav>
         <ul class="nav pull-right">
           <% if signed_in? %>
+	     <% messages = Message.unopened_messages(current_user) %>
+	     <% if messages.count %>
+	         <%= link_to "New Messages("+String(messages.count)+")", messages_path %>
+	     <% end %>
 	     <%= current_user.username %>
 	     <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
 	     

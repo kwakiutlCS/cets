@@ -5,7 +5,7 @@ Cets::Application.routes.draw do
   match "puzzles/solved" => 'puzzles#markSolved'
   resources :puzzles
   resources :comments
-  
+  resources :messages
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

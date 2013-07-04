@@ -14,7 +14,12 @@
 }
 
 #comments_box {
-		overflow-y: auto;
-		width: 100px;
-		height: 200px;
+		width: 150px;
+              max-height: 200px;
+              
+}
+
+
+#new_comment_link {
+		    display: none;
 }

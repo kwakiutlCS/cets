@@ -48,25 +48,45 @@ class PuzzlesController < ApplicationController
       stat = current_user.stats.find(:all, conditions: ["puzzle_id = ?", params[:puzzle_id]])[0]
       stat.life_attempts += 1
 
+      puzzle = Puzzle.find(params[:puzzle_id])
+      if puzzle.subtitle then title = puzzle.subtitle else title = puzzle.title end
+          
+          
       if params[:result] == "1"
         stat.streak += 1
         stat.life_solved += 1
         
         ratio = stat.life_solved/Float(stat.life_attempts)
 
-        if stat.streak == 8
+        if stat.streak == 10 && !stat.solved
           stat.solved = true
           if ratio < 0.85
             stat.life_solved = stat.streak
             stat.life_attempts = stat.streak/0.85
           end
-        elsif ratio > 0.85
+          message = current_user.messages.new
+          message.sender_id = 17
+          message.text = title+": the last attempts were successful."
+          message.sender_name = "cets.com"
+          message.save
+        elsif ratio > 0.85 && !stat.solved && stat.life_attemps > 10
                stat.solved = true
+               message = current_user.messages.new
+               message.sender_id = 17
+               message.sender_name = "cets.com"
+               message.text = title+": the last attempts were successful."
+               message.save
         end
       else
         stat.streak = 0
         if stat.solved && stat.life_solved/Float(stat.life_attempts) < 0.75
           stat.solved = false
+          message = current_user.messages.new
+          message.sender_id = 17
+          message.sender_name = "cets.com"
+          message.text = title+": the last attempts were unsuccessful."
+          message.save
+         
         end
       end
 

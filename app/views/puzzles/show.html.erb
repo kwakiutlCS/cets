@@ -15,6 +15,7 @@
      });
 
      
+     
 
     var updatePageAfterChessBoardMove = function() {
         if (chessBoard.getPuzzleResult() === "solved") {
@@ -26,7 +27,7 @@
             });
             
             $("#comments_list").show();
-            $("#create_comment").show();
+            $("#new_comment_link").show();
             $('form').submit(function(evt) {  
                 evt.preventDefault();
                 var that = $(this);
@@ -43,6 +44,11 @@
                         
                     } 
                 }); 
+            });
+            $("#new_comment_link").on("click", function(e) {
+                e.preventDefault();
+                $("#create_comment").slideToggle();
+         
             });
         }
         if (chessBoard.getPuzzleResult() === "failed") {
@@ -61,7 +67,7 @@
             $(".chessBoardPreviousStart").removeClass("chessBoardPreviousStart");
             $("#gameHistoryDiv").show();
             $("#comments_list").show();
-            $("#create_comment").show(); 
+            $("#new_comment_link").show(); 
             $('form').submit(function(evt) {  
                 evt.preventDefault();
                 var that = $(this);
@@ -77,6 +83,11 @@
                             $("#comments_list").append('<div class="comment_row"><div class="comment_text">'+json.text+'</div><div class="comment_author">'+json.name+'</div></div>');
                     } 
                 }); 
+            });
+            $("#new_comment_link").on("click", function(e) {
+                e.preventDefault();
+                $("#create_comment").slideToggle();
+         
             });
         }
 
@@ -98,6 +109,7 @@
   <% end %>
 </div>
 <% if user_signed_in? %>
+<%= link_to "new comment", "#", id:"new_comment_link" %> 
 <div id="create_comment" style="display:none">
   <%= render "comments/form" %>
 </div>

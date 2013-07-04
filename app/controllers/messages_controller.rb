@@ -1,0 +1,20 @@
+class MessagesController < ApplicationController
+  before_filter :authenticate_user!
+  
+  def create
+    receiver = User.find(params[:user_id])
+    message = receiver.messages.build(text: params[:text], sender_id: params[:sender_id])
+    message.save
+
+    render json: nil
+  end
+
+  def index
+    @messages = current_user.messages.order("created_at DESC")
+    unread = Message.unopened_messages(current_user)
+    unread.each do |m|
+      m.read = true
+      m.save
+    end
+  end
+end

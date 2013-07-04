@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130704080625) do
+ActiveRecord::Schema.define(:version => 20130704161237) do
 
   create_table "comments", :force => true do |t|
     t.integer  "user_id"
@@ -22,6 +22,16 @@ ActiveRecord::Schema.define(:version => 20130704080625) do
   end
 
   add_index "comments", ["instance_id"], :name => "index_comments_on_instance_id"
+
+  create_table "messages", :force => true do |t|
+    t.text     "text"
+    t.integer  "sender_id"
+    t.integer  "user_id"
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
+    t.boolean  "read",        :default => false
+    t.string   "sender_name"
+  end
 
   create_table "puzzle_instances", :force => true do |t|
     t.string   "fen"
