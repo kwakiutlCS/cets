@@ -6,13 +6,8 @@
 
 
 
-<div id="chessBoardHolder" class="span8">
-</div>
-<div id="colorIndicator" ></div>
-<div id="answerButtons" style="display:none"><button id="yes">Yes</button><button id="no">No</button></div>
-<div id="gameHistoryDiv" style="display:none"><button class="btn btn-small previousMove"><i class="icon-chevron-left"></i></button><button class="btn btn-small nextMove"><i class="icon-chevron-right"></i></button></div>
-
-<div id="comments_box">
+<div class="row">
+<div id="comments_box" class="span4">
 
 <div id="comments_list" style="display:none">
   <% @comments.each do |c| %>
@@ -26,6 +21,15 @@
 </div>
 <% end %>
 </div>
+
+<div id="chessBoardHolder" class="span8"></div>
+</div>
+
+<div id="colorIndicator" class="span2"></div>
+<div id="answerButtons" style="display:none" class="span4"><button id="yes">Yes</button><button id="no">No</button></div>
+<div id="gameHistoryDiv" style="display:none" class="span4"><button class="btn btn-small previousMove"><i class="icon-chevron-left"></i></button><button class="btn btn-small nextMove"><i class="icon-chevron-right"></i></button></div>
+
+
 
 </div>
 
@@ -58,6 +62,11 @@
                 type: "POST",
                 data: {"puzzle_id":<%= @puzzle.id %>, "result": result}
          });  
+         $("#new_comment_link").on("click", function(e) {
+                e.preventDefault();
+                $("#create_comment").toggle();
+         
+         }); 
      });
      $("#answerButtons").on("click", "#no", function() {
          $("#comments_list").show();
@@ -77,6 +86,11 @@
                 type: "POST",
                 data: {"puzzle_id":<%= @puzzle.id %>, "result": result}
          });
+         $("#new_comment_link").on("click", function(e) {
+                e.preventDefault();
+                $("#create_comment").toggle();
+         
+         });  
      });
      
 
@@ -122,7 +136,7 @@
             });
             $("#new_comment_link").on("click", function(e) {
                 e.preventDefault();
-                $("#create_comment").slideToggle();
+                $("#create_comment").toggle();
          
             });
         }
@@ -161,7 +175,7 @@
             });
             $("#new_comment_link").on("click", function(e) {
                 e.preventDefault();
-                $("#create_comment").slideToggle();
+                $("#create_comment").toggle();
          
             });
         }
