@@ -21,7 +21,6 @@
 <h2>Puzzle list</h2>
 
 
-
 <ul>
   <% @puzzles.each do |p| %>
 
@@ -32,6 +31,7 @@
   <% end %>
 </ul>
 
+<%= will_paginate @puzzles, class:"pager" %>
 
 
 <div class="puzzle_description" id="Mating_pattern">mate pattern description</div>

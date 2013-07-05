@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130704161237) do
+ActiveRecord::Schema.define(:version => 20130705100535) do
 
   create_table "comments", :force => true do |t|
     t.integer  "user_id"
@@ -56,9 +56,9 @@ ActiveRecord::Schema.define(:version => 20130704161237) do
   end
 
   create_table "stats", :force => true do |t|
-    t.integer  "streak"
-    t.integer  "life_attempts"
-    t.integer  "life_solved"
+    t.integer  "streak",        :default => 0
+    t.integer  "life_attempts", :default => 0
+    t.integer  "life_solved",   :default => 0
     t.datetime "created_at",                       :null => false
     t.datetime "updated_at",                       :null => false
     t.integer  "user_id"

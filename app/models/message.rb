@@ -8,7 +8,7 @@ class Message < ActiveRecord::Base
   validates :sender_name, presence: true
 
 
-  def self.unopened_messages(user)
+  def self.unopened(user)
     find(:all, conditions: {user_id: user.id, read:false})
   end
 

@@ -1,7 +1,7 @@
 class PuzzlesController < ApplicationController
   def index
     @user = current_user
-    @puzzles = Puzzle.order("difficulty").group("title").paginate(page:params[:page], per_page:15)
+    @puzzles = Puzzle.order("difficulty").group("title")
     
     @solved = {}
     @puzzles.each do |p|
@@ -17,6 +17,7 @@ class PuzzlesController < ApplicationController
       end  
     end
 
+    p Puzzles.paginate
   end
 
   def show

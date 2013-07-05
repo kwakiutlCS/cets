@@ -5,8 +5,8 @@
       <nav>
         <ul class="nav pull-right">
           <% if signed_in? %>
-	     <% messages = Message.unopened_messages(current_user) %>
-	     <% if messages.count %>
+	     <% messages = Message.unopened(current_user) %>
+	     <% if messages.count > 0 %>
 	         <%= link_to "New Messages("+String(messages.count)+")", messages_path %>
 	     <% end %>
 	     <%= current_user.username %>

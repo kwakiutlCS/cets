@@ -1,0 +1,4 @@
+class AddDefaultsToStats < ActiveRecord::Migration
+  def change
+  end
+end
