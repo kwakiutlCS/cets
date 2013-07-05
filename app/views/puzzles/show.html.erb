@@ -1,13 +1,88 @@
+<div class="container">
+
 <div id="puzzle_title"><h2><%= @puzzle.title %></h2></div>
 <div id="puzzle_explanation"><% if @puzzle.description %><%= @puzzle.description %><% else %>Find the best move(s)<% end %></div>
 <div><div id="moveResult"></div><div id="puzzle_navigation" style="display:none"><%= link_to "Back", puzzles_path %><%= link_to "Next Puzzle", @puzzle %></div></div>
 
+
+
+<div id="chessBoardHolder" class="span8">
+</div>
+<div id="colorIndicator" ></div>
+<div id="answerButtons" style="display:none"><button id="yes">Yes</button><button id="no">No</button></div>
+<div id="gameHistoryDiv" style="display:none"><button class="btn btn-small previousMove"><i class="icon-chevron-left"></i></button><button class="btn btn-small nextMove"><i class="icon-chevron-right"></i></button></div>
+
+<div id="comments_box">
+
+<div id="comments_list" style="display:none">
+  <% @comments.each do |c| %>
+  <div class="comment_row"><div class="comment_text"><%= c.text %></div><div class="comment_author"><%= c.user.username %></div><% if current_user && current_user.admin %><%= link_to "delete", c, method: :delete, remote:true %><% end %></div>
+  <% end %>
+</div>
+<% if user_signed_in? %>
+<%= link_to "new comment", "#", id:"new_comment_link" %> 
+<div id="create_comment" style="display:none">
+  <%= render "comments/form" %>
+</div>
+<% end %>
+</div>
+
+</div>
+
+
+
 <script>
      $(document).ready(function() {
-    
-     chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"<%= @puzzle.puzzle_type %>", lines:<%= raw(@instance.lines) %> });
-        
-     if (chessBoard.player === "white")
+     
+     if ("<%= @puzzle.puzzle_type %>" === "puzzle")
+     chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"puzzle", lines:<%= raw(@instance.lines) %> });
+     
+     else if ("<%= @puzzle.puzzle_type %>" === "question") {
+     chessBoard.startChessBoard({player:"locked",turn:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>" });
+     $("#answerButtons").show();
+     $("#answerButtons").on("click", "#yes", function() {
+         $("#comments_list").show();
+         $("#new_comment_link").show();
+         $("#puzzle_navigation").show();
+            
+         if ("<%= @instance.solution %>" ===  "1") {
+             $("#moveResult").text("Puzzle solved").addClass("puzzle_correct");
+             var result = 1;            
+         }
+         else {
+             $("#moveResult").text("Puzzle failed").addClass("puzzle_wrong");
+             var result = 0;
+         }
+         $("#answerButtons").hide();
+         $.ajax('/puzzles/solved',{
+                type: "POST",
+                data: {"puzzle_id":<%= @puzzle.id %>, "result": result}
+         });  
+     });
+     $("#answerButtons").on("click", "#no", function() {
+         $("#comments_list").show();
+         $("#new_comment_link").show();
+         $("#puzzle_navigation").show();
+            
+         if ("<%= @instance.solution %>" ===  "0") {
+             $("#moveResult").text("Puzzle solved").addClass("puzzle_correct");
+             var result = 1;
+         }
+         else {
+             $("#moveResult").text("Puzzle failed").addClass("puzzle_wrong");
+             var result = 0;
+         }
+         $("#answerButtons").hide();
+         $.ajax('/puzzles/solved',{
+                type: "POST",
+                data: {"puzzle_id":<%= @puzzle.id %>, "result": result}
+         });
+     });
+     
+
+     }
+
+     if (chessBoard.turn === "white")
          $("#colorIndicator").addClass("colorWhite");
      else
          $("#colorIndicator").addClass("colorBlack");
@@ -96,22 +171,3 @@
     }
 
 </script>
-
-<div id="chessBoardHolder"></div>
-<div id="colorIndicator"></div>
-<div id="gameHistoryDiv" style="display:none"><button class="btn btn-small previousMove"><i class="icon-chevron-left"></i></button><button class="btn btn-small nextMove"><i class="icon-chevron-right"></i></button></div>
-
-<div id="comments_box">
-
-<div id="comments_list" style="display:none">
-  <% @comments.each do |c| %>
-  <div class="comment_row"><div class="comment_text"><%= c.text %></div><div class="comment_author"><%= c.user.username %></div><% if current_user && current_user.admin %><%= link_to "delete", c, method: :delete, remote:true %><% end %></div>
-  <% end %>
-</div>
-<% if user_signed_in? %>
-<%= link_to "new comment", "#", id:"new_comment_link" %> 
-<div id="create_comment" style="display:none">
-  <%= render "comments/form" %>
-</div>
-<% end %>
-</div>

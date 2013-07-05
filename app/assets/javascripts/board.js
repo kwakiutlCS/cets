@@ -378,15 +378,14 @@ var chessBoard = {
 	 // allow square selection and piece movement
 	 $("#chessBoardGameBoard").on("click", ".chessBoardSquare", this.addBoardEvents);
 	 	 
-	 if (this.type === "history") {
-	     var chessBoard = this;
-	     $("#"+this.gameHistoryContainer).on("click",".nextMove", function(){
-		  chessBoard.moveHistory(1);
-	     });
-	     $("#"+this.gameHistoryContainer).on("click",".previousMove", function(){
-		  chessBoard.moveHistory(-1);
-	     });
-	 }
+	 // exp
+	 var chessBoard = this;
+	 $("#"+this.gameHistoryContainer).on("click",".nextMove", function(){
+	     chessBoard.moveHistory(1);
+	 });
+	 $("#"+this.gameHistoryContainer).on("click",".previousMove", function(){
+	     chessBoard.moveHistory(-1);
+	 });
     },
 
     preparePromotion: function() {
@@ -675,6 +674,7 @@ var chessBoard = {
     
     // updates board with recorded moves
     moveHistory: function(direction) {
+
 	 if (this.type === "history") {
 	     this.cursor += direction;
 	     if (this.cursor < 0 || this.cursor > this.lines.length)
@@ -1508,6 +1508,9 @@ var chessBoard = {
     filterIllegalMoves: function(start,moves,turn,position,passant) {
 	 
 	var possible = [];
+
+	 if (this.player === "locked")
+	     return possible;
 
 	for ( var m in moves ) {
 	    // register king square
