@@ -70,7 +70,7 @@ class PuzzlesController < ApplicationController
           message.text = title+": the last attempts were successful."
           message.sender_name = "cets.com"
           message.save
-        elsif ratio > 0.85 && !stat.solved && stat.life_attemps > 10
+        elsif ratio > 0.85 && !stat.solved && stat.life_attempts > 10
                stat.solved = true
                message = current_user.messages.new
                message.sender_id = 17
