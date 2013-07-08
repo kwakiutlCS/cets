@@ -1,8 +1,8 @@
 <div class="container">
 
 <div id="puzzle_title"><h2><%= @puzzle.title %></h2></div>
-<div id="puzzle_explanation"><% if @puzzle.description %><%= @puzzle.description %><% else %>Find the best move(s)<% end %></div>
-<div><div id="moveResult"></div><div id="puzzle_navigation" style="display:none"><%= link_to "Back", puzzles_path %><%= link_to "Next Puzzle", @puzzle %></div></div>
+<div id="puzzle_explanation"><% if @instance.description %><%= @instance.description %><% elsif @puzzle.description %><%= @puzzle.description %><% else %>Find the best move(s)<% end %></div>
+<div><div id="moveResult"></div><div id="puzzle_navigation" style="display:none"><%= link_to "Back to Index", puzzles_path %><%= link_to "Next Puzzle", @puzzle %></div></div>
 
 
 
@@ -27,6 +27,7 @@
 
 <div id="colorIndicator" class="span2"></div>
 <div id="answerButtons" style="display:none" class="span4"><button id="yes">Yes</button><button id="no">No</button></div>
+<div id="confirmButton" style="display:none" ><button id="confirmation">Confirm answer</button></div>
 <div id="gameHistoryDiv" style="display:none" class="span4"><button class="btn btn-small previousMove"><i class="icon-chevron-left"></i></button><button class="btn btn-small nextMove"><i class="icon-chevron-right"></i></button></div>
 
 
@@ -40,6 +41,7 @@
       $("#comments_list").show();
       $("#new_comment_link").show();  
       $("#answerButtons").hide();
+      $("#confirmButton").hide();
       $("#puzzle_navigation").show();
          
       $('form').submit(function(evt) {  
@@ -53,6 +55,7 @@
                     dataType: "JSON",
                     success: function(json) {
                         $("textarea").val("");
+                        $("#create_comment").hide();
                         if (json.text)
                             $("#comments_list").append('<div class="comment_row"><div class="comment_text">'+json.text+'</div><div class="comment_author">'+json.name+'</div></div>');
                     } 
@@ -83,6 +86,28 @@
      
      if ("<%= @puzzle.puzzle_type %>" === "puzzle")
          chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"puzzle", lines:<%= raw(@instance.lines) %> });
+
+     else if ("<%= @puzzle.puzzle_type %>" === "selection") {
+         chessBoard.startChessBoard({player:"locked", type:"selection", size: 400,  fen:"<%= @instance.fen %>" });
+         $("#confirmButton").show();
+         $("#confirmButton").on("click", "#confirmation", function() {
+             var result = 1;
+             var squares = <%= raw(@instance.solution) %>;
+             
+             for (var sq in squares) {
+                 if ($("#"+squares[sq]).hasClass("chessBoardKeySquare") === false) {
+                     result = 0;
+                     break;
+                 }
+             }
+             $(".chessBoardKeySquare").each(function() {
+                 if ($.inArray($(this).attr("id"),squares) === -1) {
+                     result = 0;
+                 }
+             });
+             load_comment_form(result);
+         }); 
+     }
      
      else if ("<%= @puzzle.puzzle_type %>" === "question") {
          chessBoard.startChessBoard({player:"locked",turn:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>" });
@@ -116,7 +141,7 @@
          $("#colorIndicator").addClass("colorWhite");
      else
          $("#colorIndicator").addClass("colorBlack");
-    
+     $("#colorIndicator").tooltip({content: "ola"});
   });
 
      

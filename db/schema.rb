@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130705100535) do
+ActiveRecord::Schema.define(:version => 20130708133406) do
 
   create_table "comments", :force => true do |t|
     t.integer  "user_id"
@@ -37,10 +37,11 @@ ActiveRecord::Schema.define(:version => 20130705100535) do
     t.string   "fen"
     t.integer  "rating"
     t.string   "lines"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
     t.integer  "puzzle_id"
     t.string   "solution"
+    t.string   "description"
   end
 
   add_index "puzzle_instances", ["puzzle_id"], :name => "index_puzzle_instances_on_puzzle_id"

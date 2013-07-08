@@ -183,3 +183,8 @@
 .chessBoardHidden {
     visibility: hidden;
 }
+
+.chessBoardKeySquare {
+    background-image: url('selection.png');
+    background-size: 100%;
+}
