@@ -87,6 +87,9 @@
      if ("<%= @puzzle.puzzle_type %>" === "puzzle")
          chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"puzzle", lines:<%= raw(@instance.lines) %> });
 
+     else if ("<%= @puzzle.puzzle_type %>" === "normal")
+         chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"game" });
+
      else if ("<%= @puzzle.puzzle_type %>" === "selection") {
          chessBoard.startChessBoard({player:"locked", type:"selection", size: 400,  fen:"<%= @instance.fen %>" });
          $("#confirmButton").show();
@@ -148,18 +151,35 @@
      
 
     var updatePageAfterChessBoardMove = function() {
-        if (chessBoard.getPuzzleResult() === "solved") {
-           load_comment_form(1);
-        }
-        if (chessBoard.getPuzzleResult() === "failed") {
-            $("#chessBoardHolder").children().remove();
-            chessBoard.position = {};
+        if ("<%= @puzzle.puzzle_type %>" === "puzzle") { 
+            if (chessBoard.getPuzzleResult() === "solved") {
+                load_comment_form(1);
+            }
+            if (chessBoard.getPuzzleResult() === "failed") {
+                $("#chessBoardHolder").children().remove();
+                chessBoard.position = {};
             
-            chessBoard.startChessBoard({player:"locked", size: 400,  fen:"<%= @instance.fen %>", type:"history", lines:<%= raw(@instance.solution) %>});
-            $(".chessBoardPreviousEnd").removeClass("chessBoardPreviousEnd");
-            $(".chessBoardPreviousStart").removeClass("chessBoardPreviousStart");
-            $("#gameHistoryDiv").show();
-            load_comment_form(0);
+                chessBoard.startChessBoard({player:"locked", size: 400,  fen:"<%= @instance.fen %>", type:"history", lines:<%= raw(@instance.solution) %>});
+                $(".chessBoardPreviousEnd").removeClass("chessBoardPreviousEnd");
+                $(".chessBoardPreviousStart").removeClass("chessBoardPreviousStart");
+                $("#gameHistoryDiv").show();
+                load_comment_form(0);
+            }
+        }
+
+        else if ("<%= @puzzle.puzzle_type %>" === "normal") {
+            if (chessBoard.getResult() === "<%= @side %>") {
+                load_comment_form(1);
+            }
+            else if (chessBoard.getResult() === "draw") {
+                load_comment_form(0);
+            }
+            if (chessBoard.turn !== "<%= @side %>") {
+                var move = "<%= @side %>" === "white" ? engine.getEvaluation(chessBoard.position, "black", engine.depth) : engine.getEvaluation(chessBoard.position, "white", engine.depth);
+                chessBoard.movePiece(move[0][0],move[0][1]);
+                
+            }
+            
         }
      }
 

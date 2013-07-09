@@ -48,6 +48,7 @@ class PuzzlesController < ApplicationController
     if current_user
       stat = current_user.stats.find(:all, conditions: ["puzzle_id = ?", params[:puzzle_id]])[0]
       stat.life_attempts += 1
+      stat.recent_attempts += 1
 
       puzzle = Puzzle.find(params[:puzzle_id])
       if puzzle.subtitle then title = puzzle.subtitle else title = puzzle.title end
@@ -56,21 +57,22 @@ class PuzzlesController < ApplicationController
       if params[:result] == "1"
         stat.streak += 1
         stat.life_solved += 1
+        stat.recent_solved += 1
         
-        ratio = stat.life_solved/Float(stat.life_attempts)
-
-        if stat.streak == 10 && !stat.solved
+        ratio = stat.recent_solved/Float(stat.recent_attempts)
+        
+        if stat.streak == puzzle.streak && !stat.solved
           stat.solved = true
-          if ratio < 0.85
-            stat.life_solved = stat.streak
-            stat.life_attempts = stat.streak/0.85
+          if ratio < puzzle.ratio
+            stat.recent_solved = stat.streak
+            stat.recent_attempts = stat.streak/puzzle.ratio
           end
           message = current_user.messages.new
           message.sender_id = 17
           message.text = title+": the last attempts were successful."
           message.sender_name = "cets.com"
           message.save
-        elsif ratio > 0.85 && !stat.solved && stat.life_attempts > 10
+        elsif ratio >= puzzle.ratio && !stat.solved && stat.recent_attempts >= puzzle.streak
                stat.solved = true
                message = current_user.messages.new
                message.sender_id = 17
@@ -80,7 +82,7 @@ class PuzzlesController < ApplicationController
         end
       else
         stat.streak = 0
-        if stat.solved && stat.life_solved/Float(stat.life_attempts) < 0.75
+        if stat.solved && stat.recent_solved/Float(stat.recent_attempts) < puzzle.ratio*0.87
           stat.solved = false
           message = current_user.messages.new
           message.sender_id = 17
@@ -90,7 +92,7 @@ class PuzzlesController < ApplicationController
          
         end
       end
-
+      
       stat.save
     end
 

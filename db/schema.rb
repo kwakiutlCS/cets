@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130708133406) do
+ActiveRecord::Schema.define(:version => 20130709110436) do
 
   create_table "comments", :force => true do |t|
     t.integer  "user_id"
@@ -54,17 +54,21 @@ ActiveRecord::Schema.define(:version => 20130708133406) do
     t.datetime "updated_at",  :null => false
     t.string   "description"
     t.integer  "difficulty"
+    t.integer  "streak"
+    t.float    "ratio"
   end
 
   create_table "stats", :force => true do |t|
-    t.integer  "streak",        :default => 0
-    t.integer  "life_attempts", :default => 0
-    t.integer  "life_solved",   :default => 0
-    t.datetime "created_at",                       :null => false
-    t.datetime "updated_at",                       :null => false
+    t.integer  "streak",          :default => 0
+    t.integer  "life_attempts",   :default => 0
+    t.integer  "life_solved",     :default => 0
+    t.datetime "created_at",                         :null => false
+    t.datetime "updated_at",                         :null => false
     t.integer  "user_id"
     t.integer  "puzzle_id"
-    t.boolean  "solved",        :default => false
+    t.boolean  "solved",          :default => false
+    t.integer  "recent_attempts"
+    t.integer  "recent_solved"
   end
 
   add_index "stats", ["puzzle_id"], :name => "index_stats_on_puzzle_id"
