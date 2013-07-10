@@ -1,8 +1,7 @@
-<div class="container">
 
 <div id="puzzle_title"><h2><%= @puzzle.title %></h2></div>
 <div id="puzzle_explanation"><% if @instance.description %><%= @instance.description %><% elsif @puzzle.description %><%= @puzzle.description %><% else %>Find the best move(s)<% end %></div>
-<div><div id="moveResult"></div><div id="puzzle_navigation" style="display:none"><%= link_to "Back to Index", puzzles_path %><%= link_to "Next Puzzle", @puzzle %></div></div>
+<div><div id="moveResult"></div><div id="puzzle_navigation" style="display:none"><%= link_to "Back to Index", puzzles_path %><%= link_to "Next Puzzle", @puzzle %></div>
 
 
 
@@ -69,7 +68,12 @@
  
          $.ajax('/puzzles/solved',{
                 type: "POST",
-                data: {"puzzle_id":<%= @puzzle.id %>, "result": result}
+                data: {"puzzle_id":<%= @puzzle.id %>, "result": result},
+                success: function(json) {
+                    if (json.message !== null) {
+                        $("#messager").show();
+                    }
+                }
          });
 
          if (result === 1) {

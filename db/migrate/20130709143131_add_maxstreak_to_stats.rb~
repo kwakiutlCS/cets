@@ -1,0 +1,4 @@
+class AddMaxstreakToStats < ActiveRecord::Migration
+  def change
+  end
+end

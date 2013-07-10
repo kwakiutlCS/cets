@@ -55,13 +55,15 @@ class PuzzlesController < ApplicationController
           
           
       if params[:result] == "1"
-        stat.streak += 1
+        if stat.streak > 0 then stat.streak += 1 else stat.streak = 1  end
+        stat.max_streak = stat.streak if stat.streak > stat.max_streak
+
         stat.life_solved += 1
         stat.recent_solved += 1
         
         ratio = stat.recent_solved/Float(stat.recent_attempts)
         
-        if stat.streak == puzzle.streak && !stat.solved
+        if stat.streak >= puzzle.streak && !stat.solved
           stat.solved = true
           if ratio < puzzle.ratio
             stat.recent_solved = stat.streak
@@ -81,7 +83,7 @@ class PuzzlesController < ApplicationController
                message.save
         end
       else
-        stat.streak = 0
+        if stat.streak < 0 then stat.streak -= 1 else stat.streak = -1  end
         if stat.solved && stat.recent_solved/Float(stat.recent_attempts) < puzzle.ratio*0.87
           stat.solved = false
           message = current_user.messages.new
@@ -96,7 +98,7 @@ class PuzzlesController < ApplicationController
       stat.save
     end
 
-    render json: {}
+    render json: {message:message}
   end
 
 end

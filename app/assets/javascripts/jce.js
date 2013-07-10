@@ -68,7 +68,7 @@ var engine = {
 	 for (var k in position) 
 	     score += pieceValue[position[k]];
 
-	 
+	 score += this.manClosestPiece(position,turn);
 	 return score;
    },
 
@@ -85,9 +85,8 @@ var engine = {
 	     for (var move in possibleMoves) {
                 score = 0;
 		  m = possibleMoves[move];
-		  console.log(m);
-		  opponent_pos = chessBoard.generateNewPosition(m[0], m[1], "-", chessBoard.position);
-                    
+		  opponent_pos = chessBoard.generateNewPosition(m[0], m[1], "-", pos);
+                
 		  possibleResponses = this.getPossibleMoves(opponent_pos, other);
                 for (var response in possibleResponses) {
                     r = possibleResponses[response];
@@ -121,20 +120,20 @@ var engine = {
 	     for (var move in possibleMoves) {
 		  score = 0;
 		  m = possibleMoves[move];
-		  console.log(m);
-		  
-		  opponent_pos = chessBoard.generateNewPosition(m[0], m[1], "-", chessBoard.position);
-                    
+		  opponent_pos = chessBoard.generateNewPosition(m[0], m[1], "-", pos);
+                
 		  possibleResponses = this.getPossibleMoves(opponent_pos, other);
                 for (var response in possibleResponses) {
                     r = possibleResponses[response];
 		      finalPosition = chessBoard.generateNewPosition(r[0], r[1], "-", opponent_pos);
                     
-		      score += this.getEvaluation(finalPosition, turn,depth-1); 
+		      score += this.getEvaluation(finalPosition, turn,depth-1)[1]; 
+		      
 		  }
 		  score /= possibleResponses.length;
+		  
             }
-
+	     
 	     if (turn === "white") {
 		  if (!bestMove || score > bestMove[1])
 			   bestMove = [m,score];
@@ -143,14 +142,68 @@ var engine = {
 		  if (!bestMove || score < bestMove[1])
 		      bestMove = [m,score];
             }
+	     
+	     return bestMove;
 	 }
 	 
-	 return bestMove;
+	 
 	 
     },
 
 
-    
+    manClosestPiece: function(pos, turn) {
+	 var kingSquare;
+	 if (turn === "white") {
+	     for (var k in pos) {
+		  if (pos[k] === "K") {
+		      kingSquare = k;
+		      break;
+		  }
+	     }	  
+	 }
+	 else {
+	     for (var k in pos) {
+		  if (pos[k] === "k") {
+		      kingSquare = k;
+		      break;
+		  }
+	     }	  
+	 }
+	 
+	 var rows = {"a":1, "b":2, "c":3, "d":4, "e":5, "f":6, "g":7, "h":8};
+	 var row = rows[kingSquare[0]];
+	 var col = parseInt(kingSquare[1]);
+	 var bigger = 14;
+	 var tmp;
+
+	 if (turn === "white") {
+	     
+	     for ( var k in pos ) {
+		  
+		  if (pos[k].toLowerCase() === pos[k] && pos[k] !== "k") {
+		      tmp = Math.abs(rows[k[0]]-row)+ Math.abs(parseInt(k[1])-col);
+		      bigger = tmp < bigger ? tmp : bigger;
+		  }
+		      
+	     }
+	 }
+
+	 if (turn === "black") {
+	     
+	     for ( var k in pos ) {
+		  
+		  if (pos[k].toUpperCase() === pos[k] && pos[k] !== "K") {
+		      tmp = Math.abs(rows[k[0]]-row)+ Math.abs(parseInt(k[1])-col);
+		      bigger = tmp < bigger ? tmp : bigger;
+		  }
+		      
+	     }
+	 }
+	 
+	 var result = turn === "white" ? 0.2/bigger : -0.2/bigger;
+	 
+	 return result;
+    }
 }
 
 

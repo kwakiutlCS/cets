@@ -1,23 +1,25 @@
 <header class="navbar navbar-fixed-top navbar-inverse">
   <div class="navbar-inner">
-    <div class="container">
-      
-      <nav>
+    <nav id="header_nav">
         <ul class="nav pull-right">
           <% if signed_in? %>
-	     <% messages = Message.unopened(current_user) %>
-	     <% if messages.count > 0 %>
-	         <%= link_to "New Messages("+String(messages.count)+")", messages_path %>
-	     <% end %>
-	     <%= current_user.username %>
-	     <%= link_to "Sign Out", destroy_user_session_path, method: :delete %>
+	     <% messages = Message.unopened(current_user).count %>
+	     
+	     <li id="messager" style="display:none"><%= link_to "New Messages", messages_path %></li>
+	     <li><%= link_to current_user.username, edit_user_registration_path %></li>
+	     <li><%= link_to "Sign Out", destroy_user_session_path, method: :delete %></li>
 	     
           <% else %>
             <li><%= link_to "Sign in", new_user_session_path %></li>
           <% end %>
         </ul>
       </nav>
-    </div>
+    
   </div>
 </header>
 
+
+<script>
+  if ( <%=messages %> > 0)
+      $("#messager").show();
+</script>
