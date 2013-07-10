@@ -126,6 +126,9 @@ var chessBoard = {
     // else returns "active"
 
     getResult: function(position, turn, passant) {
+	 if (this.type === "opposition")
+	     return "active";
+
 	 if (typeof position === "undefined")
 	     position = this.position;
 	 if (typeof turn === "undefined")

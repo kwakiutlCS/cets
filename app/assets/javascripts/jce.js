@@ -54,8 +54,9 @@ var engine = {
     getHeuristic: function(position,turn) {
 	 
 	 var score = 0;
+	     
 	 var result = chessBoard.getResult(position,turn,"-");
-	 
+	     
 	 if (result === "white")
 	     return 1000;
 	 else if (result === "black")
@@ -69,82 +70,90 @@ var engine = {
 	     score += pieceValue[position[k]];
 
 	 score += this.manClosestPiece(position,turn);
+	 
 	 return score;
-   },
+    },
+
+
+
+    getPartialHeuristic: function(position,turn,opposition) {
+	 
+	 var score = turn === "white" ? this.getOppositionScore(position, turn,opposition) : -this.getOppositionScore(position, turn, opposition);
+	 score += this.manSquare(position,turn,opposition);
+	 
+	 return score;
+    },
 
     
-    getEvaluation: function(pos, turn, depth) {
+
+    getEvaluation: function(pos, turn, depth, opposition, type) {
+	 var opposition = opposition || false;
+	 opposition = opposition ? opposition[1] : false;
+	 var type = type || "stupid";
+
 	 var other = turn === "black" ? "white" : "black";
 	 
 	 if (depth === 1) {
 	     var possibleMoves = this.getPossibleMoves(pos, turn);
             possibleMoves.sort(function() {return 0.5 - Math.random()}) 
 	    
-	     var score, opponent_pos, m, r, possibleResponses, finalPosition, bestMove=false;
+	     var score, opponent_pos, m, r, possibleResponses, finalPosition, bestMove=false, bestScore, avgScore;
 
 	     for (var move in possibleMoves) {
-                score = 0;
+                bestScore = false;
+		  avgScore = 0;
+
 		  m = possibleMoves[move];
 		  opponent_pos = chessBoard.generateNewPosition(m[0], m[1], "-", pos);
-                
-		  possibleResponses = this.getPossibleMoves(opponent_pos, other);
-                for (var response in possibleResponses) {
-                    r = possibleResponses[response];
-		      finalPosition = chessBoard.generateNewPosition(r[0], r[1], "-", opponent_pos);
-                    
-		      score += this.getHeuristic(finalPosition, turn); 
-		  }
-		  score /= possibleResponses.length;
 		  
-		  if (turn === "white") {
-		      if (!bestMove || score > bestMove[1])
-			   bestMove = [m,score];
+		  if (!opposition) {
+		      
+                    possibleResponses = this.getPossibleMoves(opponent_pos, other);
+                    for (var response in possibleResponses) {
+			   r = possibleResponses[response];
+			   finalPosition = chessBoard.generateNewPosition(r[0], r[1], "-", opponent_pos);
+                    
+			   score = this.getHeuristic(finalPosition, turn); 
+			   avgScore += score;
+			   if (!bestScore)
+				bestScore =  score;
+			   else if (turn === "white")
+				bestScore = score < bestScore ? score : bestScore;
+			   else if (turn === "black")
+				bestScore = score > bestScore ? score : bestScore;
+		      }
+		      avgScore /= possibleResponses.length;
+		  
+		      score = type === "stupid" ? avgScore : bestScore;
+		  
+		      if (turn === "white") {
+			   if (!bestMove || score > bestMove[1])
+				bestMove = [m,score];
+                    }
+                    else {
+			   if (!bestMove || score < bestMove[1])
+				bestMove = [m,score];
+                    }
                 }
-                else {
-		      if (!bestMove || score < bestMove[1])
-			   bestMove = [m,score];
-                }
-                
+		  else {
+		      score = this.getPartialHeuristic(opponent_pos, turn, opposition);
+		      
+		      if (turn === "white") {
+			   if (!bestMove || score > bestMove[1])
+				bestMove = [m,score];
+                    }
+                    else {
+			   if (!bestMove || score < bestMove[1])
+				bestMove = [m,score];
+                    }
+		      
+		  }
 	     }
 	     
 	     return bestMove;
 	 }
 
-	 else {
-
-	     var possibleMoves = this.getPossibleMoves(pos, turn);
-            possibleMoves.sort(function() {return 0.5 - Math.random()}) 
-	    
-	     var score, opponent_pos, m, r, possibleResponses, finalPosition, bestMove=false;
-
-	     for (var move in possibleMoves) {
-		  score = 0;
-		  m = possibleMoves[move];
-		  opponent_pos = chessBoard.generateNewPosition(m[0], m[1], "-", pos);
-                
-		  possibleResponses = this.getPossibleMoves(opponent_pos, other);
-                for (var response in possibleResponses) {
-                    r = possibleResponses[response];
-		      finalPosition = chessBoard.generateNewPosition(r[0], r[1], "-", opponent_pos);
-                    
-		      score += this.getEvaluation(finalPosition, turn,depth-1)[1]; 
-		      
-		  }
-		  score /= possibleResponses.length;
-		  
-            }
-	     
-	     if (turn === "white") {
-		  if (!bestMove || score > bestMove[1])
-			   bestMove = [m,score];
-            }
-            else {
-		  if (!bestMove || score < bestMove[1])
-		      bestMove = [m,score];
-            }
-	     
-	     return bestMove;
-	 }
+	 
 	 
 	 
 	 
@@ -203,7 +212,82 @@ var engine = {
 	 var result = turn === "white" ? 0.2/bigger : -0.2/bigger;
 	 
 	 return result;
-    }
+    },
+
+
+    manSquare: function(pos, turn, square) {
+	 
+	 var kingSquare;
+	 if (turn === "white") {
+	     for (var k in pos) {
+		  if (pos[k] === "K") {
+		      kingSquare = k;
+		      break;
+		  }
+	     }	  
+	 }
+	 else {
+	     for (var k in pos) {
+		  if (pos[k] === "k") {
+		      kingSquare = k;
+		      break;
+		  }
+	     }	  
+	 }
+	 
+	 var rows = {"a":1, "b":2, "c":3, "d":4, "e":5, "f":6, "g":7, "h":8};
+	 var row = rows[kingSquare[0]];
+	 var col = parseInt(kingSquare[1]);
+	 
+
+	 var result = Math.abs(rows[square[0]]-row)+ Math.abs(parseInt(square[1])-col)+1;
+	 result = turn === "white" ? 10./result : -10./result;
+	 
+	 return result;
+    },
+
+
+    getOppositionScore: function(pos, turn, square) {
+	 var kingSquare, opponent;
+	 if (turn === "white") {
+	     for (var k in pos) {
+		  if (pos[k] === "K") {
+		      kingSquare = k;
+		  }
+		  if (pos[k] === "k") {
+		      opponent = k;
+		  }
+	     }	  
+	 }
+	 else {
+	     for (var k in pos) {
+		  if (pos[k] === "k") {
+		      kingSquare = k;
+		  }
+		  if (pos[k] === "K") {
+		      opponent = k;
+		  }
+	     }	  
+	 }
+
+	 var rows = {"a":1, "b":2, "c":3, "d":4, "e":5, "f":6, "g":7, "h":8};
+	 var row = rows[kingSquare[0]];
+	 var opprow = rows[opponent[0]];
+	 var col = parseInt(kingSquare[1]);
+	 var oppcol = parseInt(opponent[1]);
+	 var score = 0;
+
+	 if (Math.abs(row-opprow) % 2 === 0 && Math.abs(col-oppcol) % 2 === 0)
+	     score = 1;
+	 if (row === opprow && Math.abs(square[1] - col) <= Math.abs(square[1] - oppcol)) {
+	     score *= 100;
+	 }
+	 if (col === oppcol && Math.abs(rows[square[0]] - row) <= Math.abs(rows[square[0]] - opprow)) {
+	     score *= 100;
+	 }
+
+	 return score;
+    },
 }
 
 
