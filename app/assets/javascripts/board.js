@@ -138,15 +138,16 @@ var chessBoard = {
 	 
 	 
 	 // return "draw" if bare kings
-	 var draw = true;
-	 for (var k in position) {
-	     if (position[k].toUpperCase() !== "K") {
-		  draw = false;
-		  break;
-	     }
-	 }
-	 if (draw)
+	 if (Object.keys(position).length < 3)
 	     return "draw";
+	 else if(Object.keys(position).length === 3) {
+	     for (var k in position) {
+		  if (position[k].toLowerCase() === "b" || position[k].toLowerCase() === "n")
+		      return "draw";
+	     }
+		  
+	 }
+	 
 
 	 if (turn === "black") {
 	     
@@ -1861,7 +1862,23 @@ var chessBoard = {
 		  return true;
 	 }
 	 return false;
-    }
+    },
+
+    getScore: function(position) {
+	 var pieceValue = {"K":0, "Q":8.5, "R": 4.5, "B":3, "N":2.5, "P":1, "k":0, "q":-8.5, "r": -4.5, "b":-3, "n":-2.5, "p":-1 };  
+	 var score = 0;
+
+	 for (var k in position) {
+	     score += pieceValue[position[k]];
+	 }
+	 return score;
+    },
+
+    lock: function() {
+	 this.player = "locked";
+	 $(".chessBoardPiece").draggable("disable");
+	 	  
+    },
 
 
 }

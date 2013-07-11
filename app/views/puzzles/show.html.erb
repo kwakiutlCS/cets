@@ -163,6 +163,7 @@
      
 
     var updatePageAfterChessBoardMove = function() {
+        
         var finished = false;
         if (moves && chessBoard.turn !== "<%= @side %>") {
             moves -= 1;
@@ -196,11 +197,18 @@
             else if (chessBoard.getResult() === "draw") {
                 load_comment_form(0);
             }
+            
+
             if (chessBoard.turn !== "<%= @side %>") {
-                var move = "<%= @side %>" === "white" ? engine.getEvaluation(chessBoard.position, "black", engine.depth) : engine.getEvaluation(chessBoard.position, "white", engine.depth);
+                var move = "<%= @side %>" === "white" ? engine.getEvaluation(chessBoard.position, "black", engine.depth, false, <%= @puzzle.id %>) : engine.getEvaluation(chessBoard.position, "white", engine.depth, false, <%= @puzzle.id %>);
                 chessBoard.movePiece(move[0][0],move[0][1]);
-                
+            
+                if(<%= @puzzle.id %> === 14 && Math.abs(chessBoard.getScore(chessBoard.position)) > 4) {
+                    load_comment_form(1);
+                    chessBoard.lock();
+                }    
             }
+            
             
         }
   
@@ -211,12 +219,14 @@
                 if (chessBoard.getOppositionResult(<%= raw(@instance.solution) %>))
                     load_comment_form(1);
                 else {
-                    var move = "<%= @side %>" === "white" ? engine.getEvaluation(chessBoard.position, "black", engine.depth, <%= raw(@instance.solution) %>, "evilmind") : engine.getEvaluation(chessBoard.position, "white", engine.depth, <%= raw(@instance.solution) %>, "evilmind");
+                    var move = "<%= @side %>" === "white" ? engine.getEvaluation(chessBoard.position, "black", engine.depth, <%= raw(@instance.solution) %>, <%= @puzzle.id %>, "evilmind") : engine.getEvaluation(chessBoard.position, "white", engine.depth, <%= raw(@instance.solution) %>,<%= @puzzle.id %>, "evilmind");
                     chessBoard.movePiece(move[0][0],move[0][1]);
                 } 
             }
             
         }
+
+        
      }
 
 </script>
