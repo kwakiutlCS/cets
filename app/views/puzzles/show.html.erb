@@ -200,13 +200,33 @@
             
 
             if (chessBoard.turn !== "<%= @side %>") {
+                if(<%= @puzzle.id %> === 15 && Math.abs(chessBoard.getScore(chessBoard.position)) === 0) {
+                    load_comment_form(0);
+                    chessBoard.lock();
+                    $("#puzzle_explanation").text("Prevent the pawn promotion");
+                } 
+
                 var move = "<%= @side %>" === "white" ? engine.getEvaluation(chessBoard.position, "black", engine.depth, false, <%= @puzzle.id %>) : engine.getEvaluation(chessBoard.position, "white", engine.depth, false, <%= @puzzle.id %>);
                 chessBoard.movePiece(move[0][0],move[0][1]);
             
                 if(<%= @puzzle.id %> === 14 && Math.abs(chessBoard.getScore(chessBoard.position)) > 4) {
                     load_comment_form(1);
                     chessBoard.lock();
-                }    
+                }  
+                if(<%= @puzzle.id %> === 15) {
+                    if (("<%= @side %>" === "white" && chessBoard.getScore(chessBoard.position) === 8.5) || ("<%= @side %>" === "black" && chessBoard.getScore(chessBoard.position) === -8.5)) {
+                        load_comment_form(1);
+                        chessBoard.lock();
+                    }
+                    if (("<%= @side %>" === "white" && chessBoard.getScore(chessBoard.position) === -1) || ("<%= @side %>" === "black" && chessBoard.getScore(chessBoard.position) === 1)) {
+                        load_comment_form(0);
+                        chessBoard.lock();
+                    }
+                    if (("<%= @side %>" === "white" && chessBoard.getScore(chessBoard.position) === -8.5) || ("<%= @side %>" === "black" && chessBoard.getScore(chessBoard.position) === 8.5)) {
+                        load_comment_form(0);
+                        chessBoard.lock();
+                    }
+                } 
             }
             
             

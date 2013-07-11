@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130711084524) do
+ActiveRecord::Schema.define(:version => 20130711165411) do
 
   create_table "comments", :force => true do |t|
     t.integer  "user_id"
@@ -69,8 +69,8 @@ ActiveRecord::Schema.define(:version => 20130711084524) do
     t.integer  "user_id"
     t.integer  "puzzle_id"
     t.boolean  "solved",          :default => false
-    t.integer  "recent_attempts"
-    t.integer  "recent_solved"
+    t.integer  "recent_attempts", :default => 0
+    t.integer  "recent_solved",   :default => 0
     t.integer  "max_streak",      :default => 0
   end
 
