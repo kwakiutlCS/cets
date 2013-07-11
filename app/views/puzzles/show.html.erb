@@ -22,6 +22,7 @@
 </div>
 
 <div id="chessBoardHolder" class="span8"></div>
+<div id="remainingMoves"></div>
 </div>
 
 <div id="colorIndicator" class="span2"></div>
@@ -89,16 +90,16 @@
   $(document).ready(function() {
      
      if ("<%= @puzzle.puzzle_type %>" === "puzzle")
-         chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"puzzle", lines:<%= raw(@instance.lines) %> });
+         chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"puzzle", lines:<%= raw(@instance.lines) %>, label:<%= @puzzle.label %> });
 
      else if ("<%= @puzzle.puzzle_type %>" === "normal")
-         chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"game" });
+         chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"game", label:<%= @puzzle.label %> });
 
      else if ("<%= @puzzle.puzzle_type %>" === "opposition")
-         chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"opposition" });
+         chessBoard.startChessBoard({player:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", type:"opposition", label:<%= @puzzle.label %> });
 
      else if ("<%= @puzzle.puzzle_type %>" === "selection") {
-         chessBoard.startChessBoard({player:"locked", type:"selection", size: 400,  fen:"<%= @instance.fen %>" });
+         chessBoard.startChessBoard({player:"locked", type:"selection", size: 400,  fen:"<%= @instance.fen %>", label:<%= @puzzle.label %> });
          $("#confirmButton").show();
          $("#confirmButton").on("click", "#confirmation", function() {
              var result = 1;
@@ -120,7 +121,7 @@
      }
      
      else if ("<%= @puzzle.puzzle_type %>" === "question") {
-         chessBoard.startChessBoard({player:"locked",turn:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>" });
+         chessBoard.startChessBoard({player:"locked",turn:"<%= @side %>", size: 400,  fen:"<%= @instance.fen %>", label:<%= @puzzle.label %> });
          $("#answerButtons").show();
 
 
@@ -152,13 +153,27 @@
      else
          $("#colorIndicator").addClass("colorBlack");
      $("#colorIndicator").tooltip({content: "ola"});
+
+     moves = <%= @puzzle.moves %>
+     if (moves)
+        $("#remainingMoves").text("Remaining Moves: "+moves);
   });
 
      
      
 
     var updatePageAfterChessBoardMove = function() {
-        if ("<%= @puzzle.puzzle_type %>" === "puzzle") { 
+        var finished = false;
+        if (moves && chessBoard.turn !== "<%= @side %>") {
+            moves -= 1;
+            if (!moves) {
+                load_comment_form(0);
+                finished = true;
+            }
+            $("#remainingMoves").text("Remaining Moves: "+moves);
+        }
+
+        if ("<%= @puzzle.puzzle_type %>" === "puzzle" && !finished) { 
             if (chessBoard.getPuzzleResult() === "solved") {
                 load_comment_form(1);
             }
@@ -174,7 +189,7 @@
             }
         }
 
-        else if ("<%= @puzzle.puzzle_type %>" === "normal") {
+        else if ("<%= @puzzle.puzzle_type %>" === "normal" && !finished) {
             if (chessBoard.getResult() === "<%= @side %>") {
                 load_comment_form(1);
             }
@@ -189,12 +204,16 @@
             
         }
   
-        else if ("<%= @puzzle.puzzle_type %>" === "opposition") {
-             
+        else if ("<%= @puzzle.puzzle_type %>" === "opposition" && !finished) {
+            
             if (chessBoard.turn !== "<%= @side %>") {
-                var move = "<%= @side %>" === "white" ? engine.getEvaluation(chessBoard.position, "black", engine.depth, <%= raw(@instance.solution) %>, "evilmind") : engine.getEvaluation(chessBoard.position, "white", engine.depth, <%= raw(@instance.solution) %>, "evilmind");
-                chessBoard.movePiece(move[0][0],move[0][1]);
-                
+
+                if (chessBoard.getOppositionResult(<%= raw(@instance.solution) %>))
+                    load_comment_form(1);
+                else {
+                    var move = "<%= @side %>" === "white" ? engine.getEvaluation(chessBoard.position, "black", engine.depth, <%= raw(@instance.solution) %>, "evilmind") : engine.getEvaluation(chessBoard.position, "white", engine.depth, <%= raw(@instance.solution) %>, "evilmind");
+                    chessBoard.movePiece(move[0][0],move[0][1]);
+                } 
             }
             
         }

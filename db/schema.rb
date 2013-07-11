@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130709143131) do
+ActiveRecord::Schema.define(:version => 20130711084524) do
 
   create_table "comments", :force => true do |t|
     t.integer  "user_id"
@@ -50,12 +50,14 @@ ActiveRecord::Schema.define(:version => 20130709143131) do
     t.string   "title"
     t.string   "subtitle"
     t.string   "puzzle_type"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",                     :null => false
+    t.datetime "updated_at",                     :null => false
     t.string   "description"
     t.integer  "difficulty"
     t.integer  "streak"
     t.float    "ratio"
+    t.integer  "moves",       :default => 0
+    t.boolean  "label",       :default => false
   end
 
   create_table "stats", :force => true do |t|

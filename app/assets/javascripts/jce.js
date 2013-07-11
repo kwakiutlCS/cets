@@ -240,7 +240,7 @@ var engine = {
 	 var col = parseInt(kingSquare[1]);
 	 
 
-	 var result = Math.abs(rows[square[0]]-row)+ Math.abs(parseInt(square[1])-col)+1;
+	 var result = Math.abs(rows[square[0]]-row)+ 1.1*Math.abs(parseInt(square[1])-col)+1;
 	 result = turn === "white" ? 10./result : -10./result;
 	 
 	 return result;

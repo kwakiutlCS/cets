@@ -1,0 +1,6 @@
+class AddMovesToPuzzles < ActiveRecord::Migration
+  def change
+    add_column :puzzles, :moves, :integer
+    add_column :puzzles, :label, :boolean
+  end
+end

@@ -1833,6 +1833,34 @@ var chessBoard = {
 
 	 // if piece are different
 	 return true;
+    },
+
+
+    getOppositionResult: function(squares) {
+	 var kingSquare;
+	 
+	 if (this.turn === "white") {
+	     for (var k in this.position) {
+		  if (this.position[k] === "k") {
+		      kingSquare = k;
+		      break;
+		  }
+	     }
+	 }
+	 else {
+	     for (var k in this.position) {
+		  if (this.position[k] === "K") {
+		      kingSquare = k;
+		      break;
+		  }
+	     }
+	 }
+	 
+	 for (var sq in squares) {
+	     if (kingSquare === squares[sq])
+		  return true;
+	 }
+	 return false;
     }
 
 
