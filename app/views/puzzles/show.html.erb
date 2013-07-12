@@ -155,6 +155,8 @@
      $("#colorIndicator").tooltip({content: "ola"});
 
      moves = <%= @puzzle.moves %>
+     updatedMoves = false;
+
      if (moves)
         $("#remainingMoves").text("Remaining Moves: "+moves);
   });
@@ -164,17 +166,12 @@
 
     var updatePageAfterChessBoardMove = function() {
         
-        var finished = false;
         if (moves && chessBoard.turn !== "<%= @side %>") {
             moves -= 1;
-            if (!moves) {
-                load_comment_form(0);
-                finished = true;
-            }
             $("#remainingMoves").text("Remaining Moves: "+moves);
         }
 
-        if ("<%= @puzzle.puzzle_type %>" === "puzzle" && !finished) { 
+        if ("<%= @puzzle.puzzle_type %>" === "puzzle" && moves) { 
             if (chessBoard.getPuzzleResult() === "solved") {
                 load_comment_form(1);
             }
@@ -190,7 +187,7 @@
             }
         }
 
-        else if ("<%= @puzzle.puzzle_type %>" === "normal" && !finished) {
+        else if ("<%= @puzzle.puzzle_type %>" === "normal" && moves) {
             if (chessBoard.getResult() === "<%= @side %>") {
                 load_comment_form(1);
             }
@@ -200,11 +197,7 @@
             
 
             if (chessBoard.turn !== "<%= @side %>") {
-                if(<%= @puzzle.id %> === 15 && Math.abs(chessBoard.getScore(chessBoard.position)) === 0) {
-                    load_comment_form(0);
-                    chessBoard.lock();
-                    $("#puzzle_explanation").text("Prevent the pawn promotion");
-                } 
+                
 
                 var move = "<%= @side %>" === "white" ? engine.getEvaluation(chessBoard.position, "black", engine.depth, false, <%= @puzzle.id %>) : engine.getEvaluation(chessBoard.position, "white", engine.depth, false, <%= @puzzle.id %>);
                 chessBoard.movePiece(move[0][0],move[0][1]);
@@ -213,7 +206,7 @@
                     load_comment_form(1);
                     chessBoard.lock();
                 }  
-                if(<%= @puzzle.id %> === 15) {
+                if(<%= @puzzle.id %> === 15 || <%= @puzzle.id %> === 16 || <%= @puzzle.id %> === 17) {
                     if (("<%= @side %>" === "white" && chessBoard.getScore(chessBoard.position) === 8.5) || ("<%= @side %>" === "black" && chessBoard.getScore(chessBoard.position) === -8.5)) {
                         load_comment_form(1);
                         chessBoard.lock();
@@ -221,18 +214,24 @@
                     if (("<%= @side %>" === "white" && chessBoard.getScore(chessBoard.position) === -1) || ("<%= @side %>" === "black" && chessBoard.getScore(chessBoard.position) === 1)) {
                         load_comment_form(0);
                         chessBoard.lock();
+                        
                     }
                     if (("<%= @side %>" === "white" && chessBoard.getScore(chessBoard.position) === -8.5) || ("<%= @side %>" === "black" && chessBoard.getScore(chessBoard.position) === 8.5)) {
                         load_comment_form(0);
                         chessBoard.lock();
                     }
+                    if(Math.abs(chessBoard.getScore(chessBoard.position)) === 0 && chessBoard.getResult() === "active") {
+                        moves = updatedMoves ? moves : (<%= @puzzle.id %> === 17 ? 3 : 1);
+                        updatedMoves = true;
+                        $("#remainingMoves").text("Remaining Moves: "+moves);
+                    }                 
                 } 
             }
             
             
         }
   
-        else if ("<%= @puzzle.puzzle_type %>" === "opposition" && !finished) {
+        else if ("<%= @puzzle.puzzle_type %>" === "opposition" && moves) {
             
             if (chessBoard.turn !== "<%= @side %>") {
 
@@ -245,6 +244,15 @@
             }
             
         }
+
+        if (!moves) {
+               if (chessBoard.getResult() === "active")
+                   load_comment_form(0);
+               else if (chessBoard.getResult() === "<%= @side %>")
+                   load_comment_form(1);
+               
+        } 
+  
 
         
      }

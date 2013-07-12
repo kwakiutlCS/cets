@@ -90,11 +90,10 @@ var engine = {
 		  else if (!opposition) {
 		      var heuristicFunction = this.getHeuristic;
 		      
-		      if (puzzle === 15) {
+		      if (puzzle === 15 || puzzle === 16 || puzzle === 17) {
 			   heuristicFunction = this.getQPHeuristic;
 		          type = "evilgenious";
-			   
-			   
+		   
 		      }
 		      //console.log(m);
 		      possibleResponses = this.getPossibleMoves(opponent_pos, other);
@@ -319,6 +318,7 @@ var engine = {
 	     
 	 }
 	 
+	 
 	 if ((score === 8.5 || score === -8.5) && (Math.abs(engine.rows[king[0]]-engine.rows[queen[0]]) <= 1 && Math.abs(parseInt(king[1])-parseInt(queen[1])) <= 1)) {
 	     return 0;
 	 }
@@ -348,6 +348,10 @@ var engine = {
 		      if (king[0] === pawn[0] && king[1] === "8")
 			   score -= 0.6;
 		  }
+
+		  if ((pawn[0] === "c" && king[0] === "b")  || (pawn[0] === "f" && king[0] === "g"))
+		      score = turn === "black" ? score-0.6 : score+0.6;
+	 
 	     }
 	 }
 	 
