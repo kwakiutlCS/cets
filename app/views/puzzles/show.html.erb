@@ -246,10 +246,13 @@
         }
 
         if (!moves) {
-               if (chessBoard.getResult() === "active")
-                   load_comment_form(0);
-               else if (chessBoard.getResult() === "<%= @side %>")
+               if (chessBoard.getResult() === "<%= @side %>")
                    load_comment_form(1);
+               else if ((<%= @puzzle.id %> === 15 || <%= @puzzle.id %> === 16 || <%= @puzzle.id %> === 17) && Math.abs(chessBoard.getScore(chessBoard.position)) === 8.5) 
+                   load_comment_form(1);
+               
+               else if (chessBoard.getResult() === "active")
+                   load_comment_form(0);
                
         } 
   

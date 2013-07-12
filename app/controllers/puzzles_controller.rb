@@ -24,10 +24,22 @@ class PuzzlesController < ApplicationController
     puzzles = Puzzle.find(:all, conditions: ["title = ?", @puzzle.title])
     
     instances = []
-    puzzles.each do |p|
-      p.puzzle_instances.each { |i| instances << i }
+    if user_signed_in?
+      puzzles.each do |p|
+        p.puzzle_instances.each do |i| 
+          stat = current_user.stats.where(puzzle_id: p.id).first
+          instances << i if !stat.solved || rand() > 0.8
+        end
+      end
+    else
+      puzzles.each do |p|
+        p.puzzle_instances.each { |i| instances << i }
+      end
     end
-    
+    if instances.count == 0
+      instances << puzzles.first.puzzle_instances.first
+    end
+
     offset = rand(instances.count)
 
     @instance = instances[offset]
