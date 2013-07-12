@@ -187,7 +187,7 @@
             }
         }
 
-        else if ("<%= @puzzle.puzzle_type %>" === "normal" && moves) {
+        else if ("<%= @puzzle.puzzle_type %>" === "normal") {
             if (chessBoard.getResult() === "<%= @side %>") {
                 load_comment_form(1);
             }
@@ -248,11 +248,15 @@
         if (!moves) {
                if (chessBoard.getResult() === "<%= @side %>")
                    load_comment_form(1);
-               else if ((<%= @puzzle.id %> === 15 || <%= @puzzle.id %> === 16 || <%= @puzzle.id %> === 17) && Math.abs(chessBoard.getScore(chessBoard.position)) === 8.5) 
+               else if ((<%= @puzzle.id %> === 15 || <%= @puzzle.id %> === 16 || <%= @puzzle.id %> === 17) && Math.abs(chessBoard.getScore(chessBoard.position)) === 8.5 && chessBoard.turn === "<%= @side %>")  {
                    load_comment_form(1);
+                   chessBoard.lock();
+               }
                
-               else if (chessBoard.getResult() === "active")
+               else if (chessBoard.getResult() === "active" && chessBoard.turn === "<%= @side %>") {
                    load_comment_form(0);
+                   chessBoard.lock();
+                }
                
         } 
   
